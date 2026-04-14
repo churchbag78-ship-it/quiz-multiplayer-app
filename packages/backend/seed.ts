@@ -11,132 +11,132 @@ const prisma = new PrismaClient();
 // Master question database with 1000+ questions across 25+ topics
 const allQuestionsByCat = {
   "AI & Technology": Array(70).fill(0).map((_, i) => ({
-    q: `In AI & Technology: What is trending in question ${i+1}?`,
+    q: `What is the most trending AI technology?`,
     a: ["Artificial Intelligence", "Machine Learning", "Cloud Computing", "Blockchain"],
     c: 0
   })),
   "Heavy Metal Music": Array(60).fill(0).map((_, i) => ({
-    q: `In Heavy Metal Music: Which is a legendary band (Q${i+1})?`,
+    q: `Which is a legendary heavy metal band?`,
     a: ["Black Sabbath", "Metallica", "Iron Maiden", "Judas Priest"],
     c: Math.floor(Math.random() * 4)
   })),
   "Popular Snacks": Array(60).fill(0).map((_, i) => ({
-    q: `In Popular Snacks: What's your favorite (Q${i+1})?`,
+    q: `What's a popular crunchy snack?`,
     a: ["Chips", "Cookies", "Nuts", "Candy"],
     c: Math.floor(Math.random() * 4)
   })),
   "Alcoholic Drinks": Array(60).fill(0).map((_, i) => ({
-    q: `In Alcoholic Drinks: Which is popular (Q${i+1})?`,
+    q: `Which alcoholic beverage is most popular?`,
     a: ["Beer", "Wine", "Spirits", "Cocktails"],
     c: Math.floor(Math.random() * 4)
   })),
   "Entertainment & Movies": Array(80).fill(0).map((_, i) => ({
-    q: `In Entertainment & Movies: What's a fact (Q${i+1})?`,
+    q: `Which is a popular entertainment format?`,
     a: ["Film", "Series", "Actor", "Director"],
     c: Math.floor(Math.random() * 4)
   })),
   "Music & Artists": Array(70).fill(0).map((_, i) => ({
-    q: `In Music & Artists: What's notable (Q${i+1})?`,
+    q: `What's a major music industry award?`,
     a: ["Grammy Award", "Hit Song", "Album", "Tour"],
     c: Math.floor(Math.random() * 4)
   })),
   "Sports & Athletes": Array(70).fill(0).map((_, i) => ({
-    q: `In Sports & Athletes: What's a fact (Q${i+1})?`,
+    q: `What's an achievement in sports?`,
     a: ["Championship", "Player", "Team", "Record"],
     c: Math.floor(Math.random() * 4)
   })),
   "Gaming & Esports": Array(50).fill(0).map((_, i) => ({
-    q: `In Gaming & Esports: What's notable (Q${i+1})?`,
+    q: `What's part of gaming culture?`,
     a: ["Popular Game", "Esports", "Console", "Developer"],
     c: Math.floor(Math.random() * 4)
   })),
   "Fashion & Celebrities": Array(50).fill(0).map((_, i) => ({
-    q: `In Fashion & Celebrities: What's trending (Q${i+1})?`,
+    q: `What's trending in fashion?`,
     a: ["Designer Brand", "Celebrity", "Trend", "Style"],
     c: Math.floor(Math.random() * 4)
   })),
   "Food & Restaurants": Array(50).fill(0).map((_, i) => ({
-    q: `In Food & Restaurants: What's a fact (Q${i+1})?`,
+    q: `What's popular in food culture?`,
     a: ["Cuisine", "Restaurant", "Chef", "Dish"],
     c: Math.floor(Math.random() * 4)
   })),
   "Travel & Tourism": Array(50).fill(0).map((_, i) => ({
-    q: `In Travel & Tourism: What's a destination (Q${i+1})?`,
+    q: `What's a dream travel destination?`,
     a: ["Country", "City", "Attraction", "Experience"],
     c: Math.floor(Math.random() * 4)
   })),
   "Business & Startups": Array(50).fill(0).map((_, i) => ({
-    q: `In Business & Startups: What's a fact (Q${i+1})?`,
+    q: `What's important in business?`,
     a: ["Company", "Entrepreneur", "Innovation", "Investment"],
     c: Math.floor(Math.random() * 4)
   })),
   "Health & Fitness": Array(50).fill(0).map((_, i) => ({
-    q: `In Health & Fitness: What's a tip (Q${i+1})?`,
+    q: `What's key to staying healthy?`,
     a: ["Exercise", "Nutrition", "Wellness", "Lifestyle"],
     c: Math.floor(Math.random() * 4)
   })),
   "Science & Space": Array(50).fill(0).map((_, i) => ({
-    q: `In Science & Space: What's a fact (Q${i+1})?`,
+    q: `What's a major breakthrough in science?`,
     a: ["Discovery", "Invention", "Theory", "Experiment"],
     c: Math.floor(Math.random() * 4)
   })),
   "History": Array(50).fill(0).map((_, i) => ({
-    q: `In History: What event happened (Q${i+1})?`,
+    q: `What's a significant historical event?`,
     a: ["Date", "Event", "Person", "Era"],
     c: Math.floor(Math.random() * 4)
   })),
   "Politics & Government": Array(50).fill(0).map((_, i) => ({
-    q: `In Politics & Government: What's a fact (Q${i+1})?`,
+    q: `What's important in politics?`,
     a: ["Leader", "Election", "Law", "Country"],
     c: Math.floor(Math.random() * 4)
   })),
   "Books & Literature": Array(50).fill(0).map((_, i) => ({
-    q: `In Books & Literature: What's a fact (Q${i+1})?`,
+    q: `What's classic in literature?`,
     a: ["Title", "Author", "Genre", "Character"],
     c: Math.floor(Math.random() * 4)
   })),
   "Memes & Internet Culture": Array(50).fill(0).map((_, i) => ({
-    q: `In Memes & Internet Culture: What's trending (Q${i+1})?`,
+    q: `What's trending online?`,
     a: ["Viral", "Meme", "Trend", "Platform"],
     c: Math.floor(Math.random() * 4)
   })),
   "Peep Show UK": Array(40).fill(0).map((_, i) => ({
-    q: `In Peep Show (UK Series): What's a fact (Q${i+1})?`,
-    a: ["Character", "Plot", "Dialogue", "Scene"],
+    q: `What happens in Peep Show?`,
+    a: ["Character moment", "Plot twist", "Funny dialogue", "Epic scene"],
     c: Math.floor(Math.random() * 4)
   })),
   "Education & Learning": Array(40).fill(0).map((_, i) => ({
-    q: `In Education & Learning: What's a fact (Q${i+1})?`,
+    q: `What's important for education?`,
     a: ["Subject", "University", "Skill", "Knowledge"],
     c: Math.floor(Math.random() * 4)
   })),
   "Environment & Sustainability": Array(40).fill(0).map((_, i) => ({
-    q: `In Environment & Sustainability: What's a fact (Q${i+1})?`,
-    a: ["Sustainability", "Climate", "Conservation", "Green"],
+    q: `What helps the environment?`,
+    a: ["Sustainability", "Climate action", "Conservation", "Green energy"],
     c: Math.floor(Math.random() * 4)
   })),
   "News & Trending 2024": Array(60).fill(0).map((_, i) => ({
-    q: `In News & Trending 2024: What's notable (Q${i+1})?`,
-    a: ["Current Event", "Technology", "Entertainment", "World"],
+    q: `What's trending right now?`,
+    a: ["Current event", "New technology", "Entertainment news", "World news"],
     c: Math.floor(Math.random() * 4)
   })),
   "Celebrity Gossip": Array(40).fill(0).map((_, i) => ({
-    q: `In Celebrity Gossip: What's the news (Q${i+1})?`,
-    a: ["Celebrity", "Drama", "Relationship", "News"],
+    q: `What's celebrity news?`,
+    a: ["Celebrity", "Drama", "Relationship", "Breaking news"],
     c: Math.floor(Math.random() * 4)
   })),
   "Cars & Automobiles": Array(40).fill(0).map((_, i) => ({
-    q: `In Cars & Automobiles: What's a fact (Q${i+1})?`,
-    a: ["Brand", "Model", "Feature", "Spec"],
+    q: `What's notable about cars?`,
+    a: ["Brand", "Model", "Feature", "Specification"],
     c: Math.floor(Math.random() * 4)
   })),
   "Real Estate": Array(40).fill(0).map((_, i) => ({
-    q: `In Real Estate: What's a fact (Q${i+1})?`,
+    q: `What matters in real estate?`,
     a: ["Property", "Market", "Location", "Price"],
     c: Math.floor(Math.random() * 4)
   })),
   "Fitness & Wellness": Array(40).fill(0).map((_, i) => ({
-    q: `In Fitness & Wellness: What's a fact (Q${i+1})?`,
+    q: `What promotes wellness?`,
     a: ["Yoga", "Meditation", "Health", "Lifestyle"],
     c: Math.floor(Math.random() * 4)
   })),
