@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  username  String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  quizzes         Quiz[]
+  gameParticipants GameSession[]
+  scores          Score[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id        String     @id @default(cuid())
+  title     String
+  description String?
+  creatorId String
+  creator   User       @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  isPublic  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  questions    Question[]
+  gameSessions GameSession[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id        String     @id @default(cuid())
+  quizId    String
+  quiz      Quiz       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text      String
+  order     Int
+  createdAt DateTime   @default(now())
+
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id         String  @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  isCorrect  Boolean @default(false)
+
+  @@map("answers")
+}
+
+model GameSession {
+  id        String     @id @default(cuid())
+  quizId    String
+  quiz      Quiz       @relation(fields: [quizId], references: [id])
+  status    String     @default("waiting") // waiting, in_progress, completed
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  startedAt DateTime?
+  endedAt   DateTime?
+
+  participants User[]
+  scores       Score[]
+
+  @@map("game_sessions")
+}
+
+model Score {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameSessionId String
+  gameSession   GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  score         Int         @default(0)
+  correctAnswers Int        @default(0)
+  totalQuestions Int        @default(0)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, gameSessionId])
+  @@map("scores")
+}
