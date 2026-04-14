@@ -36,6 +36,7 @@ function GamePage({ gameId, onBack }: GamePageProps) {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameEnded, setGameEnded] = useState(false);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [copied, setCopied] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -184,19 +185,17 @@ function GamePage({ gameId, onBack }: GamePageProps) {
     );
   }
 
-  if (!gameStarted) {
-    const [copied, setCopied] = React.useState(false);
-
-    const handleCopyInvite = () => {
-      const inviteCode = gameId.substring(0, 8).toUpperCase();
-      const inviteText = `Join my quiz game! Game Code: ${inviteCode}\n\nJoin at: ${window.location.origin}`;
-      navigator.clipboard.writeText(inviteText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    };
-
+  const handleCopyInvite = () => {
     const inviteCode = gameId.substring(0, 8).toUpperCase();
+    const inviteText = `Join my quiz game! Game Code: ${inviteCode}\n\nJoin at: ${window.location.origin}`;
+    navigator.clipboard.writeText(inviteText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
+  const inviteCode = gameId.substring(0, 8).toUpperCase();
+
+  if (!gameStarted) {
     return (
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="max-w-2xl mx-auto">

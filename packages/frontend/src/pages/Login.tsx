@@ -62,15 +62,17 @@ function Login({ onSwitchToRegister }: LoginProps) {
           </button>
         </form>
 
-        <p className="text-center text-gray-600 mt-6">
-          Don't have an account?{' '}
+        <div className="mt-6 space-y-4">
+          <div className="text-center text-gray-600">
+            Don't have an account?
+          </div>
           <button
             onClick={onSwitchToRegister}
-            className="text-blue-500 hover:underline font-semibold"
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
           >
-            Register
+            Create Account
           </button>
-        </p>
+        </div>
       </div>
     </div>
   );
