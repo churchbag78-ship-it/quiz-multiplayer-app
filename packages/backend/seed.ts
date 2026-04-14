@@ -22,11 +22,11 @@ async function main() {
   });
   console.log(`✅ Created user: ${user.username}`);
 
-  // Create 15-question Trending Topics quiz (mixed categories)
+  // Create mixed quiz with Trending Topics, Peep Show, and Music
   const trendingQuiz = await prisma.quiz.create({
     data: {
-      title: "Trending Topics 2024 Quiz",
-      description: "Test your knowledge across Tech, Sports, Entertainment, Science & News! 🌍📱🎬⚽🚀",
+      title: "Ultimate Knowledge Quiz 2024",
+      description: "Trending topics, Peep Show trivia, music legends, sports & more! 🌍📺🎵⚽🚀",
       creatorId: user.id,
       questions: {
         create: [
@@ -267,6 +267,114 @@ async function main() {
                 { text: "Prince", isCorrect: false },
                 { text: "David Bowie", isCorrect: false },
                 { text: "Queen", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "What are the names of the two main characters in the UK series 'Peep Show'?",
+            order: 21,
+            answers: {
+              create: [
+                { text: "Mark and Jez", isCorrect: true },
+                { text: "Tim and Daisy", isCorrect: false },
+                { text: "Roy and Moss", isCorrect: false },
+                { text: "Gordon and Jack", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "How many series did 'Peep Show' run before ending?",
+            order: 22,
+            answers: {
+              create: [
+                { text: "9 series", isCorrect: true },
+                { text: "6 series", isCorrect: false },
+                { text: "12 series", isCorrect: false },
+                { text: "7 series", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "In 'Peep Show', what is Mark Corrigan's job profession?",
+            order: 23,
+            answers: {
+              create: [
+                { text: "Lawyer", isCorrect: true },
+                { text: "Accountant", isCorrect: false },
+                { text: "Banker", isCorrect: false },
+                { text: "Therapist", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "What is the unique storytelling style of 'Peep Show'?",
+            order: 24,
+            answers: {
+              create: [
+                { text: "First-person internal monologue from character's perspective", isCorrect: true },
+                { text: "Third-person omniscient narration", isCorrect: false },
+                { text: "Documentary style with interviews", isCorrect: false },
+                { text: "Animated sequences", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "What is Jez Usborne's primary character flaw in 'Peep Show'?",
+            order: 25,
+            answers: {
+              create: [
+                { text: "His lack of responsibility and unreliability", isCorrect: true },
+                { text: "His extreme jealousy", isCorrect: false },
+                { text: "His violent temper", isCorrect: false },
+                { text: "His obsession with money", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Which British network aired 'Peep Show'?",
+            order: 26,
+            answers: {
+              create: [
+                { text: "Channel 4", isCorrect: true },
+                { text: "BBC", isCorrect: false },
+                { text: "ITV", isCorrect: false },
+                { text: "Sky Atlantic", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "In what year did 'Peep Show' first premiere?",
+            order: 27,
+            answers: {
+              create: [
+                { text: "2003", isCorrect: true },
+                { text: "2005", isCorrect: false },
+                { text: "2001", isCorrect: false },
+                { text: "2000", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "What major global event significantly impacted 2024?",
+            order: 28,
+            answers: {
+              create: [
+                { text: "Multiple elections across major countries", isCorrect: true },
+                { text: "A major pandemic outbreak", isCorrect: false },
+                { text: "A world war declaration", isCorrect: false },
+                { text: "Economic collapse", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Which renewable energy source saw the biggest growth in 2024?",
+            order: 29,
+            answers: {
+              create: [
+                { text: "Solar power", isCorrect: true },
+                { text: "Wind power", isCorrect: false },
+                { text: "Hydroelectric", isCorrect: false },
+                { text: "Geothermal", isCorrect: false },
               ],
             },
           },
