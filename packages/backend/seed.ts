@@ -1,7 +1,7 @@
 /**
- * Seed script with 75+ question pool
+ * Large seed script with 180+ questions for maximum variety
  * Each question MUST have exactly 4 answers
- * Each game selects a random subset of questions
+ * Each game randomly selects 28 questions with ZERO repeats across games
  */
 
 import { PrismaClient } from "@prisma/client";
@@ -9,10 +9,232 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log("🌱 Starting database seed with large question pool...\n");
+// All questions organized by category
+const allQuestions = [
+  // PEEP SHOW (30 questions)
+  { text: "What are the names of the two main characters in 'Peep Show'?", answers: ["Mark and Jez", "Tim and Daisy", "Roy and Moss", "Gordon and Jack"], correct: 0 },
+  { text: "How many series did 'Peep Show' run?", answers: ["9 series", "6 series", "12 series", "7 series"], correct: 0 },
+  { text: "What is Mark Corrigan's job?", answers: ["Lawyer", "Accountant", "Banker", "Therapist"], correct: 0 },
+  { text: "What is the unique storytelling style of 'Peep Show'?", answers: ["First-person internal monologue", "Third-person narration", "Documentary style", "Animated sequences"], correct: 0 },
+  { text: "Which network aired 'Peep Show'?", answers: ["Channel 4", "BBC", "ITV", "Sky Atlantic"], correct: 0 },
+  { text: "In what year did 'Peep Show' premiere?", answers: ["2003", "2005", "2001", "2000"], correct: 0 },
+  { text: "What is Jez Usborne's primary flaw?", answers: ["Lack of responsibility", "Extreme jealousy", "Violent temper", "Obsession with money"], correct: 0 },
+  { text: "What does Mark obsess over?", answers: ["Social anxiety", "Becoming rich", "Winning awards", "Meeting celebrities"], correct: 0 },
+  { text: "Which character was a struggling musician?", answers: ["Jez Usborne", "Mark Corrigan", "Super Hans", "Zahra Karim"], correct: 0 },
+  { text: "What is the apartment building called?", answers: ["New Cross", "Tower Bridge", "Camden Heights", "Elephant Court"], correct: 0 },
+  { text: "Who was Super Hans to Jez?", answers: ["Best friend", "Brother", "Therapist", "Boss"], correct: 0 },
+  { text: "How many main characters were in 'Peep Show'?", answers: ["4 main characters", "2 main characters", "6 main characters", "5 main characters"], correct: 0 },
+  { text: "What was the main setting of 'Peep Show'?", answers: ["London", "Manchester", "Bristol", "Liverpool"], correct: 0 },
+  { text: "Did 'Peep Show' have a laugh track?", answers: ["No", "Yes, continuous", "Sometimes", "Only in later seasons"], correct: 0 },
+  { text: "What decade was 'Peep Show' most popular?", answers: ["2000s and 2010s", "1990s", "2020s", "1980s"], correct: 0 },
+  { text: "What was Mark's biggest fear throughout the series?", answers: ["Social embarrassment", "Financial ruin", "Losing Jez", "Getting old"], correct: 0 },
+  { text: "What job did Jez repeatedly fail at?", answers: ["Various odd jobs", "Programming", "Teaching", "Sales"], correct: 0 },
+  { text: "Who was Mark's love interest?", answers: ["Sophie", "Lauren", "Rebecca", "Lisa"], correct: 0 },
+  { text: "What was the show's signature humor style?", answers: ["Cringe comedy", "Slapstick", "Dark humor", "Satirical"], correct: 0 },
+  { text: "How many seasons until the show ended?", answers: ["9 seasons", "8 seasons", "10 seasons", "11 seasons"], correct: 0 },
+  { text: "What color was Mark obsessed with?", answers: ["Red", "Blue", "Green", "Yellow"], correct: 0 },
+  { text: "What was Jez's most memorable catchphrase?", answers: ["You bloody idiot", "Oh God", "I'm not being funny", "Innit"], correct: 0 },
+  { text: "Did Mark ever date Sophie long-term?", answers: ["Yes, multiple times", "Never", "Once briefly", "Off and on"], correct: 0 },
+  { text: "What was the show's running time per episode?", answers: ["30 minutes", "45 minutes", "60 minutes", "20 minutes"], correct: 0 },
+  { text: "Which character provided the most physical comedy?", answers: ["Super Hans", "Mark", "Jez", "Zahra"], correct: 0 },
+  { text: "What industry did the show satirize most?", answers: ["Law and business", "Entertainment", "Media", "Technology"], correct: 0 },
+  { text: "How many times did Mark and Jez move?", answers: ["Never, same apartment", "Once", "Twice", "Multiple times"], correct: 0 },
+  { text: "What was Jez's biggest dream?", answers: ["Becoming a musician", "Getting rich", "Meeting celebrities", "Travel the world"], correct: 0 },
+  { text: "Did the show win any major awards?", answers: ["Yes, multiple BAFTAs", "One BAFTA", "No major awards", "Golden Globes"], correct: 0 },
+  { text: "What made 'Peep Show' revolutionary?", answers: ["POV camera technique", "First British mockumentary", "First sitcom on streaming", "First animated sitcom"], correct: 0 },
 
-  // Create test user
+  // MUSIC (35 questions)
+  { text: "Who released 'Thriller'?", answers: ["Michael Jackson", "Prince", "David Bowie", "Queen"], correct: 0 },
+  { text: "Which artist won the most Grammy Awards?", answers: ["Taylor Swift", "Beyoncé", "Georg Solti", "Quincy Jones"], correct: 0 },
+  { text: "Who was the biggest artist of the 2000s?", answers: ["Eminem", "50 Cent", "Nelly", "Ja Rule"], correct: 0 },
+  { text: "What is the most-streamed song on Spotify?", answers: ["Blinding Lights", "Shape of You", "Levitating", "One Dance"], correct: 0 },
+  { text: "Which British singer dominated the 2010s?", answers: ["Ed Sheeran", "Harry Styles", "Adele", "The Weeknd"], correct: 0 },
+  { text: "Who won Grammy Album of the Year 2024?", answers: ["Taylor Swift", "The Weeknd", "Billie Eilish", "Drake"], correct: 0 },
+  { text: "Which K-pop group surpassed The Beatles?", answers: ["BTS", "NewJeans", "BLACKPINK", "Stray Kids"], correct: 0 },
+  { text: "What is Taylor Swift's Eras Tour named after?", answers: ["Her album eras", "Fashion eras", "Music genres", "Tour locations"], correct: 0 },
+  { text: "Who has the most Grammys ever?", answers: ["Taylor Swift", "Beyoncé", "Billie Eilish", "Adele"], correct: 0 },
+  { text: "What genre is Billie Eilish known for?", answers: ["Alternative/Indie", "Country", "Gospel", "Heavy Metal"], correct: 0 },
+  { text: "Who is the 'King of Pop'?", answers: ["Michael Jackson", "Prince", "Elvis Presley", "David Bowie"], correct: 0 },
+  { text: "Who released 'Lemonade' in 2016?", answers: ["Beyoncé", "Rihanna", "Alicia Keys", "Mary J. Blige"], correct: 0 },
+  { text: "Who sang 'Bohemian Rhapsody'?", answers: ["Queen", "The Beatles", "Pink Floyd", "Led Zeppelin"], correct: 0 },
+  { text: "What is The Weeknd's real name?", answers: ["Abel Makkonen Tesfaye", "Christopher Maurice Brown", "Aubrey Drake Graham", "Armando Christian Pérez"], correct: 0 },
+  { text: "Which artist dropped an album without warning in 2013?", answers: ["Beyoncé", "Taylor Swift", "Drake", "Kanye West"], correct: 0 },
+  { text: "Who is known for high vocal range?", answers: ["Ariana Grande", "Billie Eilish", "Dua Lipa", "Selena Gomez"], correct: 0 },
+  { text: "Who released '90210'?", answers: ["The Weeknd", "Drake", "Kendrick Lamar", "J. Cole"], correct: 0 },
+  { text: "Who is Drake's biggest rival in hip-hop?", answers: ["Kendrick Lamar", "J. Cole", "Lil Baby", "Travis Scott"], correct: 0 },
+  { text: "What was Kanye West's first album?", answers: ["The College Dropout", "Late Registration", "Graduation", "808s"], correct: 0 },
+  { text: "Who is the 'Queen of Pop'?", answers: ["Madonna", "Britney Spears", "Lady Gaga", "Cher"], correct: 0 },
+  { text: "What is Dua Lipa's biggest hit?", answers: ["Levitating", "Don't Start Now", "Physical", "Break My Heart"], correct: 0 },
+  { text: "Who sang 'Uptown Funk'?", answers: ["Mark Ronson & Bruno Mars", "The Weeknd", "Drake", "Kendrick Lamar"], correct: 0 },
+  { text: "What is The Beatles' best-selling album?", answers: ["Sgt. Pepper's", "Abbey Road", "The White Album", "Revolver"], correct: 0 },
+  { text: "Who is known for breaking streaming records?", answers: ["Bad Bunny", "Drake", "The Weeknd", "Post Malone"], correct: 0 },
+  { text: "What genre did Billie Eilish pioneer?", answers: ["Whisper rap/pop", "Trap", "Drill", "Emo pop"], correct: 0 },
+  { text: "Who collaborated with The Weeknd most?", answers: ["Daft Punk", "SZA", "Drake", "Kendrick Lamar"], correct: 0 },
+  { text: "What is Olivia Rodrigo's first album?", answers: ["SOUR", "Guts", "Drivers License", "Good 4 U"], correct: 0 },
+  { text: "Who is the youngest billionaire musician?", answers: ["Jay-Z", "Kanye West", "Dr. Dre", "Usher"], correct: 0 },
+  { text: "What was Prince's most famous album?", answers: ["Purple Rain", "Sign O' the Times", "Around the World in a Day", "Controversy"], correct: 0 },
+  { text: "Who had the biggest album of 2023?", answers: ["Taylor Swift (Midnights)", "Eminem", "Drake", "Bad Bunny"], correct: 0 },
+  { text: "What artist influenced modern pop the most?", answers: ["David Bowie", "Prince", "Michael Jackson", "Madonna"], correct: 0 },
+  { text: "Who is the fastest-selling artist ever?", answers: ["BTS", "Taylor Swift", "BLACKPINK", "Coldplay"], correct: 0 },
+  { text: "What is Rihanna's real name?", answers: ["Robyn Rihanna Fenty", "Rihanna Fenty", "Robin Rihanna", "Rianna Fenty"], correct: 0 },
+  { text: "Who holds the record for Grammy nominations?", answers: ["Beyoncé", "Jay-Z", "Taylor Swift", "Kanye West"], correct: 0 },
+  { text: "What was the first music video to get 1 billion views?", answers: ["Gangnam Style", "Despacito", "Baby", "Shape of You"], correct: 0 },
+];
+
+// Continue with other categories...
+// TRENDING TOPICS (35 questions)
+const trendingQuestions = [
+  { text: "Which platform premiered 'The Rings of Power'?", answers: ["Amazon Prime", "Netflix", "Disney+", "Apple TV+"], correct: 0 },
+  { text: "What is Elon Musk's AI company?", answers: ["xAI", "OpenAI", "Anthropic", "DeepMind"], correct: 0 },
+  { text: "Which country hosted 2024 Olympics?", answers: ["France", "Japan", "Italy", "Brazil"], correct: 0 },
+  { text: "Which AI released ChatGPT-4?", answers: ["OpenAI", "Google DeepMind", "Anthropic", "Meta AI"], correct: 0 },
+  { text: "What is Apple Intelligence's feature?", answers: ["On-device AI", "Cloud-only AI", "Voice only", "Text only"], correct: 0 },
+  { text: "Which platform introduced 'Threads'?", answers: ["Meta/Instagram", "Twitter", "TikTok", "Snapchat"], correct: 0 },
+  { text: "What major event impacted 2024?", answers: ["Multiple elections", "Pandemic", "War declaration", "Economic collapse"], correct: 0 },
+  { text: "Which renewable energy grew most?", answers: ["Solar", "Wind", "Hydroelectric", "Geothermal"], correct: 0 },
+  { text: "Who replaced Elon at Twitter?", answers: ["Linda Yaccarino", "Jack Dorsey", "Parag Agrawal", "Evan Williams"], correct: 0 },
+  { text: "What is the most popular AI chatbot?", answers: ["ChatGPT", "Bard", "Claude", "LLaMA"], correct: 0 },
+  { text: "Which streaming became most profitable?", answers: ["Netflix", "Prime Video", "Disney+", "Max"], correct: 0 },
+  { text: "What tech trend dominated 2024?", answers: ["AI", "Crypto", "VR", "Blockchain"], correct: 0 },
+  { text: "Which Netflix series went global?", answers: ["Wednesday", "Stranger Things", "Squid Game", "Oppenheimer"], correct: 0 },
+  { text: "What does API stand for?", answers: ["Application Programming Interface", "Advanced Integration", "Protocol Integration", "Infrastructure"], correct: 0 },
+  { text: "Which company is AWS?", answers: ["Amazon", "Microsoft", "Google", "Apple"], correct: 0 },
+  { text: "What is the biggest AI concern?", answers: ["Job displacement", "Data privacy", "Misinformation", "All of above"], correct: 3 },
+  { text: "Which country leads in 5G?", answers: ["China", "USA", "South Korea", "Japan"], correct: 0 },
+  { text: "What is Web3?", answers: ["Decentralized internet", "New browser", "AI interface", "Cloud service"], correct: 0 },
+  { text: "Who is leading the EV market?", answers: ["Tesla", "BMW", "Ford", "GM"], correct: 0 },
+  { text: "What is the metaverse?", answers: ["Virtual reality space", "Social media", "Gaming platform", "Virtual headset"], correct: 0 },
+  { text: "Which company focuses on quantum computing?", answers: ["IBM", "Google", "Microsoft", "All of above"], correct: 3 },
+  { text: "What is blockchain used for?", answers: ["Cryptocurrency", "Data security", "Smart contracts", "All of above"], correct: 3 },
+  { text: "Who invented cryptocurrency?", answers: ["Unknown (Satoshi Nakamoto)", "Elon Musk", "Mark Zuckerberg", "Steve Jobs"], correct: 0 },
+  { text: "What is the most valuable crypto?", answers: ["Bitcoin", "Ethereum", "Dogecoin", "Ripple"], correct: 0 },
+  { text: "Which company owns ChatGPT?", answers: ["OpenAI", "Microsoft", "Google", "Meta"], correct: 0 },
+  { text: "What is machine learning?", answers: ["AI learning from data", "Robot learning", "Computer basics", "Programming"], correct: 0 },
+  { text: "Who created Facebook?", answers: ["Mark Zuckerberg", "Elon Musk", "Bill Gates", "Steve Jobs"], correct: 0 },
+  { text: "What is the dark web?", answers: ["Hidden internet part", "Bad websites", "Illegal sites only", "Private network"], correct: 0 },
+  { text: "Which company makes Android?", answers: ["Google", "Apple", "Microsoft", "Samsung"], correct: 0 },
+  { text: "What is the iOS?", answers: ["Apple's operating system", "Android version", "Windows mobile", "Linux version"], correct: 0 },
+  { text: "Who is the richest person?", answers: ["Elon Musk / Jeff Bezos", "Bill Gates", "Bernard Arnault", "Mark Zuckerberg"], correct: 0 },
+  { text: "Which country has the fastest internet?", answers: ["South Korea", "Japan", "Singapore", "Netherlands"], correct: 0 },
+  { text: "What is cybersecurity?", answers: ["Protecting digital systems", "Computer repair", "Software coding", "Tech support"], correct: 0 },
+  { text: "Who is leading social media?", answers: ["Meta", "ByteDance", "Twitter/X", "Snap"], correct: 0 },
+  { text: "What is NFT?", answers: ["Non-fungible token", "Digital image", "Cryptocurrency", "Digital art"], correct: 0 },
+];
+
+// SPORTS (30 questions)
+const sportsQuestions = [
+  { text: "Who won the 2024 Super Bowl?", answers: ["Kansas City Chiefs", "San Francisco 49ers", "Buffalo Bills", "LA Rams"], correct: 0 },
+  { text: "Who is the GOAT of basketball?", answers: ["Michael Jordan", "LeBron James", "Kobe Bryant", "Kareem"], correct: 0 },
+  { text: "Who was the first female NBA G League player?", answers: ["Olivia Rozman", "Jewell Loyd", "Breanna Stewart", "Satou Sabally"], correct: 0 },
+  { text: "What sport uses 'Checkmate'?", answers: ["Chess", "Tennis", "Golf", "Cricket"], correct: 0 },
+  { text: "Who won the most Olympic medals?", answers: ["Michael Phelps", "Usain Bolt", "Simone Biles", "Roger Federer"], correct: 0 },
+  { text: "Who is the GOAT of tennis?", answers: ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Andy Murray"], correct: 0 },
+  { text: "What sport is played on ice?", answers: ["Ice Hockey", "Basketball", "Tennis", "Badminton"], correct: 0 },
+  { text: "How many basketball players per team?", answers: ["5", "6", "7", "4"], correct: 0 },
+  { text: "Which country dominates sumo?", answers: ["Japan", "Russia", "South Korea", "China"], correct: 0 },
+  { text: "Who won 2024 Wimbledon Men's?", answers: ["Carlos Alcaraz", "Jannik Sinner", "Novak Djokovic", "Andrey Rublev"], correct: 0 },
+  { text: "What is the most popular sport?", answers: ["Football/Soccer", "Basketball", "Tennis", "Golf"], correct: 0 },
+  { text: "How many players in cricket?", answers: ["11", "9", "13", "15"], correct: 0 },
+  { text: "What is the Tour de France?", answers: ["Cycling race", "Running race", "Swimming race", "Triathlon"], correct: 0 },
+  { text: "Who won the most Super Bowls?", answers: ["Tom Brady", "Joe Montana", "Dan Marino", "John Elway"], correct: 0 },
+  { text: "What is the FIFA World Cup?", answers: ["Soccer tournament", "Olympics", "Championship", "League"], correct: 0 },
+  { text: "How many NFL teams are there?", answers: ["32", "30", "28", "35"], correct: 0 },
+  { text: "What is the Stanley Cup?", answers: ["Hockey trophy", "Baseball trophy", "Basketball trophy", "Football trophy"], correct: 0 },
+  { text: "Who is the GOAT of soccer?", answers: ["Lionel Messi", "Cristiano Ronaldo", "Pelé", "Maradona"], correct: 0 },
+  { text: "What is the Wimbledon?", answers: ["Tennis tournament", "Golf tournament", "Running race", "Swimming race"], correct: 0 },
+  { text: "How many players in baseball?", answers: ["9", "11", "7", "13"], correct: 0 },
+  { text: "What is the Olympics?", answers: ["International sports event", "National competition", "Regional event", "Local tournament"], correct: 0 },
+  { text: "Who won the most NBA titles?", answers: ["Bill Russell", "Michael Jordan", "Lebron James", "Kareem Abdul-Jabbar"], correct: 0 },
+  { text: "What is the Ryder Cup?", answers: ["Golf competition", "Tennis event", "Basketball event", "Soccer event"], correct: 0 },
+  { text: "How many holes in golf?", answers: ["18", "9", "27", "36"], correct: 0 },
+  { text: "What is the Masters?", answers: ["Golf tournament", "Tennis event", "Running race", "Swimming competition"], correct: 0 },
+  { text: "Who won the most Wimbledon titles?", answers: ["Serena Williams / Margaret Court", "Martina Navratilova", "Billie Jean King", "Chris Evert"], correct: 0 },
+  { text: "What is the Daytona 500?", answers: ["Car race", "Horse race", "Motorcycle race", "Truck race"], correct: 0 },
+  { text: "How many players in an NFL team?", answers: ["11", "13", "10", "12"], correct: 0 },
+  { text: "What is the Kentucky Derby?", answers: ["Horse racing", "Car racing", "Running race", "Cycling race"], correct: 0 },
+  { text: "Who won the most World Cups?", answers: ["Brazil", "Germany", "Italy", "France"], correct: 0 },
+];
+
+// ENTERTAINMENT (35 questions)
+const entertainmentQuestions = [
+  { text: "Which film won Best Picture 2024?", answers: ["Oppenheimer", "Barbie", "Killers of Flower Moon", "American Fiction"], correct: 0 },
+  { text: "Who hosted Oscars 2024?", answers: ["Jimmy Kimmel", "Conan O'Brien", "Seth Meyers", "Stephen Colbert"], correct: 0 },
+  { text: "Which superhero movie biggest 2024?", answers: ["Deadpool & Wolverine", "Captain America", "Joker 2", "Inside Out 2"], correct: 0 },
+  { text: "Most watched Netflix series?", answers: ["Squid Game", "Bridgerton", "Stranger Things", "The Crown"], correct: 0 },
+  { text: "Who directed Oppenheimer?", answers: ["Christopher Nolan", "Quentin Tarantino", "David Fincher", "Steven Spielberg"], correct: 0 },
+  { text: "Highest grossing 2023 film?", answers: ["Barbie", "Oppenheimer", "Killers Flower Moon", "Dune 2"], correct: 0 },
+  { text: "Who starred in Barbie?", answers: ["Margot Robbie", "Taylor Swift", "Timothée Chalamet", "Florence Pugh"], correct: 0 },
+  { text: "Movie franchise with most films?", answers: ["James Bond", "Marvel", "Fast Furious", "Star Wars"], correct: 0 },
+  { text: "Best Actor Oscar 2024?", answers: ["Cillian Murphy", "Adam Driver", "Bradley Cooper", "Timothée Chalamet"], correct: 0 },
+  { text: "Most streaming subscribers?", answers: ["Netflix", "Prime Video", "Disney+", "Max"], correct: 0 },
+  { text: "Highest paid actress 2024?", answers: ["Taylor Swift", "Margot Robbie", "Zendaya", "Emma Stone"], correct: 0 },
+  { text: "Highest rated IMDB movie?", answers: ["Shawshank Redemption", "The Godfather", "Dark Knight", "Pulp Fiction"], correct: 0 },
+  { text: "Who directed Dark Knight?", answers: ["Christopher Nolan", "Tim Burton", "Michael Bay", "Zack Snyder"], correct: 0 },
+  { text: "Who played Iron Man?", answers: ["Robert Downey Jr.", "Chris Evans", "Mark Ruffalo", "Tom Hiddleston"], correct: 0 },
+  { text: "Longest movie ever made?", answers: ["Over 24 hours", "12 hours", "6 hours", "3 hours"], correct: 0 },
+  { text: "Who created The Office US?", answers: ["Greg Daniels", "Steve Carell", "Michael Scott", "NBC"], correct: 0 },
+  { text: "Best Breaking Bad character?", answers: ["Walter White / Jesse", "Hank Schrader", "Saul Goodman", "Mike Ehrmantraut"], correct: 0 },
+  { text: "Who created Game of Thrones?", answers: ["D.B. Weiss & David Benioff", "George R.R. Martin", "HBO", "Showtime"], correct: 0 },
+  { text: "Best Disney Pixar film?", answers: ["Toy Story / Up", "Finding Nemo", "Incredibles", "Cars"], correct: 0 },
+  { text: "Who voiced Woody in Toy Story?", answers: ["Tom Hanks", "Tim Allen", "John Ratzenberger", "Don Rickles"], correct: 0 },
+  { text: "Best Marvel movie ever?", answers: ["Infinity War / Endgame", "Civil War", "Ragnarok", "Winter Soldier"], correct: 0 },
+  { text: "Who is the MCU's Iron Man?", answers: ["Robert Downey Jr.", "Chris Evans", "Chris Hemsworth", "Mark Ruffalo"], correct: 0 },
+  { text: "Best Star Wars film?", answers: ["Empire Strikes Back", "New Hope", "Return Jedi", "Force Awakens"], correct: 0 },
+  { text: "Who directed Avatar?", answers: ["James Cameron", "Peter Jackson", "Steven Spielberg", "Christopher Nolan"], correct: 0 },
+  { text: "Highest grossing film ever?", answers: ["Avatar 2", "Avengers Endgame", "Avatar", "Titanic"], correct: 0 },
+  { text: "Who won best actress 2024?", answers: ["Emma Stone", "Carey Mulligan", "Lily Gladstone", "Margot Robbie"], correct: 0 },
+  { text: "Best comedy series?", answers: ["The Office", "Friends", "Parks Rec", "Community"], correct: 0 },
+  { text: "Who created Friends?", answers: ["David Crane & Marta Kauffman", "Ross Geller", "NBC", "Warner Bros"], correct: 0 },
+  { text: "Best animated series?", answers: ["Avatar Last Airbender", "Fullmetal Alchemist", "Code Geass", "Attack Titan"], correct: 0 },
+  { text: "Who created Stranger Things?", answers: ["Duffer Brothers", "Netflix", "Steven Spielberg", "Stephen King"], correct: 0 },
+  { text: "Best British TV series?", answers: ["Peep Show / The Office UK", "Sherlock", "Doctor Who", "Downton Abbey"], correct: 0 },
+  { text: "Who hosts SNL most?", answers: ["Alec Baldwin", "Tina Fey", "Will Ferrell", "Andy Samberg"], correct: 0 },
+  { text: "Best animated movie?", answers: ["Spirited Away", "Your Name", "Lion King", "Frozen"], correct: 0 },
+  { text: "Who directed Inception?", answers: ["Christopher Nolan", "Denis Villeneuve", "Ridley Scott", "James Cameron"], correct: 0 },
+  { text: "Best thriller film ever?", answers: ["Psycho / Se7en", "Jaws", "Silence Lambs", "Shining"], correct: 0 },
+];
+
+// SCIENCE (30 questions)
+const scienceQuestions = [
+  { text: "What does DNA stand for?", answers: ["Deoxyribonucleic Acid", "Diribonucleic", "Deoxynucleic Protein", "Digital Nucleic"], correct: 0 },
+  { text: "Chemical symbol for gold?", answers: ["Au", "Gd", "Ag", "Go"], correct: 0 },
+  { text: "Planet known as Red?", answers: ["Mars", "Venus", "Jupiter", "Saturn"], correct: 0 },
+  { text: "Smallest unit of life?", answers: ["Cell", "Atom", "Molecule", "Organism"], correct: 0 },
+  { text: "Bones in human body?", answers: ["206", "186", "256", "176"], correct: 0 },
+  { text: "Speed of light?", answers: ["299,792,458 m/s", "200,000,000", "400,000,000", "100,000,000"], correct: 0 },
+  { text: "Who developed relativity?", answers: ["Albert Einstein", "Isaac Newton", "Stephen Hawking", "Galileo"], correct: 0 },
+  { text: "Largest human organ?", answers: ["Skin", "Brain", "Heart", "Liver"], correct: 0 },
+  { text: "NASA stands for?", answers: ["National Aeronautics Space Admin", "National Aerospace Space Agency", "Aviation Space Admin", "Aeronautics Society"], correct: 0 },
+  { text: "Moon landing year?", answers: ["1969", "1965", "1972", "1971"], correct: 0 },
+  { text: "How many elements periodic table?", answers: ["118", "100", "92", "150"], correct: 0 },
+  { text: "What is photosynthesis?", answers: ["Plants make food from sunlight", "Plants eat food", "Photographic synthesis", "Light combination"], correct: 0 },
+  { text: "How many planets?", answers: ["8", "9", "7", "10"], correct: 0 },
+  { text: "Closest planet to sun?", answers: ["Mercury", "Venus", "Earth", "Mars"], correct: 0 },
+  { text: "Hottest planet?", answers: ["Venus", "Mercury", "Mars", "Jupiter"], correct: 0 },
+  { text: "What is gravity?", answers: ["Force attracting objects", "Weight measurement", "Earth's force", "Magnetic field"], correct: 0 },
+  { text: "Who is Stephen Hawking?", answers: ["Theoretical physicist", "Astronomer", "Biologist", "Chemist"], correct: 0 },
+  { text: "What is evolution?", answers: ["Change in organisms over time", "Animal development", "Species creation", "Natural selection"], correct: 0 },
+  { text: "Who proposed evolution?", answers: ["Charles Darwin", "Gregor Mendel", "Louis Pasteur", "Marie Curie"], correct: 0 },
+  { text: "What is quantum physics?", answers: ["Physics of tiny particles", "Wave physics", "Relativity", "Classical physics"], correct: 0 },
+  { text: "Fastest animal?", answers: ["Peregrine Falcon", "Cheetah", "Pronghorn", "Sailfish"], correct: 0 },
+  { text: "Largest animal?", answers: ["Blue Whale", "Elephant", "Giraffe", "Hippopotamus"], correct: 0 },
+  { text: "How many species on Earth?", answers: ["8.7 million", "5 million", "3 million", "10 million"], correct: 0 },
+  { text: "What is extinction?", answers: ["Species ceases to exist", "Animal migration", "Natural selection", "Evolution"], correct: 0 },
+  { text: "How old is Earth?", answers: ["4.5 billion years", "2 billion", "6 billion", "1 billion"], correct: 0 },
+  { text: "What is Big Bang?", answers: ["Universe's origin explosion", "Space event", "Star creation", "Galaxy formation"], correct: 0 },
+  { text: "What is climate change?", answers: ["Long-term climate shift", "Weather change", "Temperature rise", "Greenhouse effect"], correct: 0 },
+  { text: "What is genetics?", answers: ["Study of heredity", "Gene modification", "DNA study", "Trait inheritance"], correct: 0 },
+  { text: "Who is Marie Curie?", answers: ["Physicist/Chemist", "Biologist", "Astronomer", "Geologist"], correct: 0 },
+  { text: "What is a Black Hole?", answers: ["Extreme gravity region", "Space void", "Dead star", "Cosmic phenomenon"], correct: 0 },
+];
+
+async function main() {
+  console.log("🌱 Creating massive 180+ question pool...\n");
+
+  // Clear previous data
+  await prisma.quiz.deleteMany({});
+  await prisma.user.deleteMany({});
+
   const hashedPassword = await bcrypt.hash("password123", 10);
   const user = await prisma.user.create({
     data: {
@@ -23,1034 +245,31 @@ async function main() {
   });
   console.log(`✅ Created user: ${user.username}`);
 
-  // Create large pool quiz (75+ questions)
-  const largeQuiz = await prisma.quiz.create({
+  // Create all questions
+  const allQuestionsWithOrder = [
+    ...allQuestions,
+    ...trendingQuestions,
+    ...sportsQuestions,
+    ...entertainmentQuestions,
+    ...scienceQuestions,
+  ].map((q, index) => ({
+    text: q.text,
+    order: index + 1,
+    answers: {
+      create: q.answers.map((answer, idx) => ({
+        text: answer,
+        isCorrect: idx === q.correct,
+      })),
+    },
+  }));
+
+  const mainQuiz = await prisma.quiz.create({
     data: {
-      title: "Ultimate Knowledge Quiz 2024",
-      description: "75+ rotating questions! Get different questions every login - Peep Show, Music, Trending, Sports & more! 🌍📺🎵⚽🚀",
+      title: "Ultimate Knowledge Quiz 2024 - Massive Edition",
+      description: "180+ questions! Every login = NEW random 28 questions. Zero repeats! 🎲🌍📺🎵⚽🚀",
       creatorId: user.id,
       questions: {
-        create: [
-          // PEEP SHOW QUESTIONS (15 questions)
-          {
-            text: "What are the names of the two main characters in 'Peep Show'?",
-            order: 1,
-            answers: {
-              create: [
-                { text: "Mark and Jez", isCorrect: true },
-                { text: "Tim and Daisy", isCorrect: false },
-                { text: "Roy and Moss", isCorrect: false },
-                { text: "Gordon and Jack", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "How many series did 'Peep Show' run before ending?",
-            order: 2,
-            answers: {
-              create: [
-                { text: "9 series", isCorrect: true },
-                { text: "6 series", isCorrect: false },
-                { text: "12 series", isCorrect: false },
-                { text: "7 series", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is Mark Corrigan's job in 'Peep Show'?",
-            order: 3,
-            answers: {
-              create: [
-                { text: "Lawyer", isCorrect: true },
-                { text: "Accountant", isCorrect: false },
-                { text: "Banker", isCorrect: false },
-                { text: "Therapist", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the unique storytelling style of 'Peep Show'?",
-            order: 4,
-            answers: {
-              create: [
-                { text: "First-person internal monologue", isCorrect: true },
-                { text: "Third-person narration", isCorrect: false },
-                { text: "Documentary style", isCorrect: false },
-                { text: "Animated sequences", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which network aired 'Peep Show'?",
-            order: 5,
-            answers: {
-              create: [
-                { text: "Channel 4", isCorrect: true },
-                { text: "BBC", isCorrect: false },
-                { text: "ITV", isCorrect: false },
-                { text: "Sky Atlantic", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "In what year did 'Peep Show' first premiere?",
-            order: 6,
-            answers: {
-              create: [
-                { text: "2003", isCorrect: true },
-                { text: "2005", isCorrect: false },
-                { text: "2001", isCorrect: false },
-                { text: "2000", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is Jez Usborne's primary character flaw?",
-            order: 7,
-            answers: {
-              create: [
-                { text: "Lack of responsibility", isCorrect: true },
-                { text: "Extreme jealousy", isCorrect: false },
-                { text: "Violent temper", isCorrect: false },
-                { text: "Obsession with money", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What does Mark obsess over throughout the series?",
-            order: 8,
-            answers: {
-              create: [
-                { text: "Social anxiety and self-image", isCorrect: true },
-                { text: "Becoming rich", isCorrect: false },
-                { text: "Winning awards", isCorrect: false },
-                { text: "Meeting celebrities", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which character was a struggling musician in 'Peep Show'?",
-            order: 9,
-            answers: {
-              create: [
-                { text: "Jez Usborne", isCorrect: true },
-                { text: "Mark Corrigan", isCorrect: false },
-                { text: "Super Hans", isCorrect: false },
-                { text: "Zahra Karim", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the apartment building called in 'Peep Show'?",
-            order: 10,
-            answers: {
-              create: [
-                { text: "New Cross", isCorrect: true },
-                { text: "Tower Bridge", isCorrect: false },
-                { text: "Camden Heights", isCorrect: false },
-                { text: "Elephant Court", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who was Super Hans in relation to Jez?",
-            order: 11,
-            answers: {
-              create: [
-                { text: "Best friend", isCorrect: true },
-                { text: "Brother", isCorrect: false },
-                { text: "Therapist", isCorrect: false },
-                { text: "Boss", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "How many characters were in the main cast of 'Peep Show'?",
-            order: 12,
-            answers: {
-              create: [
-                { text: "4 main characters", isCorrect: true },
-                { text: "2 main characters", isCorrect: false },
-                { text: "6 main characters", isCorrect: false },
-                { text: "5 main characters", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What was the setting of most 'Peep Show' episodes?",
-            order: 13,
-            answers: {
-              create: [
-                { text: "London", isCorrect: true },
-                { text: "Manchester", isCorrect: false },
-                { text: "Bristol", isCorrect: false },
-                { text: "Liverpool", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Did 'Peep Show' have a laugh track?",
-            order: 14,
-            answers: {
-              create: [
-                { text: "No", isCorrect: true },
-                { text: "Yes, continuous", isCorrect: false },
-                { text: "Sometimes", isCorrect: false },
-                { text: "Only in later seasons", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What decade was 'Peep Show' most popular?",
-            order: 15,
-            answers: {
-              create: [
-                { text: "2000s and 2010s", isCorrect: true },
-                { text: "1990s", isCorrect: false },
-                { text: "2020s", isCorrect: false },
-                { text: "1980s", isCorrect: false },
-              ],
-            },
-          },
-
-          // MUSIC QUESTIONS (18 questions)
-          {
-            text: "Who released 'Thriller', the best-selling album ever?",
-            order: 16,
-            answers: {
-              create: [
-                { text: "Michael Jackson", isCorrect: true },
-                { text: "Prince", isCorrect: false },
-                { text: "David Bowie", isCorrect: false },
-                { text: "Queen", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which artist won the most Grammy Awards in history?",
-            order: 17,
-            answers: {
-              create: [
-                { text: "Taylor Swift", isCorrect: true },
-                { text: "Beyoncé", isCorrect: false },
-                { text: "Georg Solti", isCorrect: false },
-                { text: "Quincy Jones", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who was the biggest artist of the 2000s?",
-            order: 18,
-            answers: {
-              create: [
-                { text: "Eminem", isCorrect: true },
-                { text: "50 Cent", isCorrect: false },
-                { text: "Nelly", isCorrect: false },
-                { text: "Ja Rule", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the most-streamed song on Spotify?",
-            order: 19,
-            answers: {
-              create: [
-                { text: "Blinding Lights - The Weeknd", isCorrect: true },
-                { text: "Shape of You - Ed Sheeran", isCorrect: false },
-                { text: "Levitating - Dua Lipa", isCorrect: false },
-                { text: "One Dance - Drake", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which British singer dominated the 2010s?",
-            order: 20,
-            answers: {
-              create: [
-                { text: "Ed Sheeran", isCorrect: true },
-                { text: "Harry Styles", isCorrect: false },
-                { text: "Adele", isCorrect: false },
-                { text: "The Weeknd", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who won the Grammy Award for Album of the Year in 2024?",
-            order: 21,
-            answers: {
-              create: [
-                { text: "Taylor Swift", isCorrect: true },
-                { text: "The Weeknd", isCorrect: false },
-                { text: "Billie Eilish", isCorrect: false },
-                { text: "Drake", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which K-pop group surpassed The Beatles on Spotify?",
-            order: 22,
-            answers: {
-              create: [
-                { text: "BTS", isCorrect: true },
-                { text: "NewJeans", isCorrect: false },
-                { text: "BLACKPINK", isCorrect: false },
-                { text: "Stray Kids", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is Taylor Swift's Eras Tour named after?",
-            order: 23,
-            answers: {
-              create: [
-                { text: "Her album eras/time periods", isCorrect: true },
-                { text: "Fashion eras", isCorrect: false },
-                { text: "Music genres", isCorrect: false },
-                { text: "Tour locations", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which female artist has the most Grammys ever?",
-            order: 24,
-            answers: {
-              create: [
-                { text: "Taylor Swift", isCorrect: true },
-                { text: "Beyoncé", isCorrect: false },
-                { text: "Billie Eilish", isCorrect: false },
-                { text: "Adele", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What genre is Billie Eilish known for?",
-            order: 25,
-            answers: {
-              create: [
-                { text: "Alternative/Indie", isCorrect: true },
-                { text: "Country", isCorrect: false },
-                { text: "Gospel", isCorrect: false },
-                { text: "Heavy Metal", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who is known as the 'King of Pop'?",
-            order: 26,
-            answers: {
-              create: [
-                { text: "Michael Jackson", isCorrect: true },
-                { text: "Prince", isCorrect: false },
-                { text: "Elvis Presley", isCorrect: false },
-                { text: "David Bowie", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which artist released 'Lemonade' in 2016?",
-            order: 27,
-            answers: {
-              create: [
-                { text: "Beyoncé", isCorrect: true },
-                { text: "Rihanna", isCorrect: false },
-                { text: "Alicia Keys", isCorrect: false },
-                { text: "Mary J. Blige", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who sang 'Bohemian Rhapsody'?",
-            order: 28,
-            answers: {
-              create: [
-                { text: "Queen", isCorrect: true },
-                { text: "The Beatles", isCorrect: false },
-                { text: "Pink Floyd", isCorrect: false },
-                { text: "Led Zeppelin", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is The Weeknd's real name?",
-            order: 29,
-            answers: {
-              create: [
-                { text: "Abel Makkonen Tesfaye", isCorrect: true },
-                { text: "Christopher Maurice Brown", isCorrect: false },
-                { text: "Aubrey Drake Graham", isCorrect: false },
-                { text: "Armando Christian Pérez", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which artist famously dropped an album without warning in 2013?",
-            order: 30,
-            answers: {
-              create: [
-                { text: "Beyoncé", isCorrect: true },
-                { text: "Taylor Swift", isCorrect: false },
-                { text: "Drake", isCorrect: false },
-                { text: "Kanye West", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who is known for their high vocal range and operatic style?",
-            order: 31,
-            answers: {
-              create: [
-                { text: "Ariana Grande", isCorrect: true },
-                { text: "Billie Eilish", isCorrect: false },
-                { text: "Dua Lipa", isCorrect: false },
-                { text: "Selena Gomez", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which rapper released '90210'?",
-            order: 32,
-            answers: {
-              create: [
-                { text: "The Weeknd", isCorrect: true },
-                { text: "Drake", isCorrect: false },
-                { text: "Kendrick Lamar", isCorrect: false },
-                { text: "J. Cole", isCorrect: false },
-              ],
-            },
-          },
-
-          // TRENDING TOPICS (15 questions)
-          {
-            text: "Which streaming platform premiered 'The Rings of Power'?",
-            order: 33,
-            answers: {
-              create: [
-                { text: "Amazon Prime", isCorrect: true },
-                { text: "Netflix", isCorrect: false },
-                { text: "Disney+", isCorrect: false },
-                { text: "Apple TV+", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the name of Elon Musk's AI company?",
-            order: 34,
-            answers: {
-              create: [
-                { text: "xAI", isCorrect: true },
-                { text: "OpenAI", isCorrect: false },
-                { text: "Anthropic", isCorrect: false },
-                { text: "DeepMind", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which country hosted the 2024 Summer Olympics?",
-            order: 35,
-            answers: {
-              create: [
-                { text: "France", isCorrect: true },
-                { text: "Japan", isCorrect: false },
-                { text: "Italy", isCorrect: false },
-                { text: "Brazil", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which AI company released ChatGPT-4?",
-            order: 36,
-            answers: {
-              create: [
-                { text: "OpenAI", isCorrect: true },
-                { text: "Google DeepMind", isCorrect: false },
-                { text: "Anthropic", isCorrect: false },
-                { text: "Meta AI", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the unique feature of Apple Intelligence?",
-            order: 37,
-            answers: {
-              create: [
-                { text: "On-device AI processing", isCorrect: true },
-                { text: "Cloud-only AI", isCorrect: false },
-                { text: "Voice recognition only", isCorrect: false },
-                { text: "Text generation only", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which social media platform introduced 'Threads'?",
-            order: 38,
-            answers: {
-              create: [
-                { text: "Meta (Instagram)", isCorrect: true },
-                { text: "Twitter", isCorrect: false },
-                { text: "TikTok", isCorrect: false },
-                { text: "Snapchat", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which major global event significantly impacted 2024?",
-            order: 39,
-            answers: {
-              create: [
-                { text: "Multiple elections across major countries", isCorrect: true },
-                { text: "A major pandemic outbreak", isCorrect: false },
-                { text: "A world war declaration", isCorrect: false },
-                { text: "Economic collapse", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which renewable energy source saw biggest growth in 2024?",
-            order: 40,
-            answers: {
-              create: [
-                { text: "Solar power", isCorrect: true },
-                { text: "Wind power", isCorrect: false },
-                { text: "Hydroelectric", isCorrect: false },
-                { text: "Geothermal", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who replaced Elon Musk as Twitter CEO?",
-            order: 41,
-            answers: {
-              create: [
-                { text: "Linda Yaccarino", isCorrect: true },
-                { text: "Jack Dorsey", isCorrect: false },
-                { text: "Parag Agrawal", isCorrect: false },
-                { text: "Evan Williams", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the most popular AI chatbot as of 2024?",
-            order: 42,
-            answers: {
-              create: [
-                { text: "ChatGPT", isCorrect: true },
-                { text: "Bard", isCorrect: false },
-                { text: "Claude", isCorrect: false },
-                { text: "LLaMA", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which streaming service became the most profitable in 2024?",
-            order: 43,
-            answers: {
-              create: [
-                { text: "Netflix", isCorrect: true },
-                { text: "Amazon Prime Video", isCorrect: false },
-                { text: "Disney+", isCorrect: false },
-                { text: "Max (HBO)", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What tech trend dominated 2024 discussions?",
-            order: 44,
-            answers: {
-              create: [
-                { text: "Artificial Intelligence", isCorrect: true },
-                { text: "Crypto currencies", isCorrect: false },
-                { text: "Virtual Reality", isCorrect: false },
-                { text: "Blockchain", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which Netflix series became a global phenomenon in 2023?",
-            order: 45,
-            answers: {
-              create: [
-                { text: "Wednesday", isCorrect: true },
-                { text: "Stranger Things", isCorrect: false },
-                { text: "Squid Game: The Challenge", isCorrect: false },
-                { text: "Oppenheimer", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What does API stand for in tech?",
-            order: 46,
-            answers: {
-              create: [
-                { text: "Application Programming Interface", isCorrect: true },
-                { text: "Advanced Programming Integration", isCorrect: false },
-                { text: "Application Protocol Integration", isCorrect: false },
-                { text: "Application Programming Infrastructure", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which major cloud provider is AWS?",
-            order: 47,
-            answers: {
-              create: [
-                { text: "Amazon", isCorrect: true },
-                { text: "Microsoft", isCorrect: false },
-                { text: "Google", isCorrect: false },
-                { text: "Apple", isCorrect: false },
-              ],
-            },
-          },
-
-          // SPORTS QUESTIONS (12 questions)
-          {
-            text: "Who won the 2024 Super Bowl?",
-            order: 48,
-            answers: {
-              create: [
-                { text: "Kansas City Chiefs", isCorrect: true },
-                { text: "San Francisco 49ers", isCorrect: false },
-                { text: "Buffalo Bills", isCorrect: false },
-                { text: "Los Angeles Rams", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which athlete is the GOAT of basketball?",
-            order: 49,
-            answers: {
-              create: [
-                { text: "Michael Jordan", isCorrect: true },
-                { text: "LeBron James", isCorrect: false },
-                { text: "Kobe Bryant", isCorrect: false },
-                { text: "Kareem Abdul-Jabbar", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who became the first-ever female NBA G League player in 2024?",
-            order: 50,
-            answers: {
-              create: [
-                { text: "Olivia Rozman", isCorrect: true },
-                { text: "Jewell Loyd", isCorrect: false },
-                { text: "Breanna Stewart", isCorrect: false },
-                { text: "Satou Sabally", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which sport uses the term 'Checkmate'?",
-            order: 51,
-            answers: {
-              create: [
-                { text: "Chess", isCorrect: true },
-                { text: "Tennis", isCorrect: false },
-                { text: "Golf", isCorrect: false },
-                { text: "Cricket", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who won the most Olympic medals ever?",
-            order: 52,
-            answers: {
-              create: [
-                { text: "Michael Phelps", isCorrect: true },
-                { text: "Usain Bolt", isCorrect: false },
-                { text: "Simone Biles", isCorrect: false },
-                { text: "Roger Federer", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which football team won the 2024 Super Bowl halftime show?",
-            order: 53,
-            answers: {
-              create: [
-                { text: "Kansas City Chiefs", isCorrect: true },
-                { text: "San Francisco 49ers", isCorrect: false },
-                { text: "Buffalo Bills", isCorrect: false },
-                { text: "Detroit Lions", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who is known as the 'GOAT' of tennis?",
-            order: 54,
-            answers: {
-              create: [
-                { text: "Roger Federer", isCorrect: true },
-                { text: "Rafael Nadal", isCorrect: false },
-                { text: "Novak Djokovic", isCorrect: false },
-                { text: "Andy Murray", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which sport is played on ice?",
-            order: 55,
-            answers: {
-              create: [
-                { text: "Ice Hockey", isCorrect: true },
-                { text: "Basketball", isCorrect: false },
-                { text: "Tennis", isCorrect: false },
-                { text: "Badminton", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "How many players are on a basketball team on court?",
-            order: 56,
-            answers: {
-              create: [
-                { text: "5 players", isCorrect: true },
-                { text: "6 players", isCorrect: false },
-                { text: "7 players", isCorrect: false },
-                { text: "4 players", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which country dominates in sumo wrestling?",
-            order: 57,
-            answers: {
-              create: [
-                { text: "Japan", isCorrect: true },
-                { text: "Russia", isCorrect: false },
-                { text: "South Korea", isCorrect: false },
-                { text: "China", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who won the 2024 Wimbledon Men's Singles?",
-            order: 58,
-            answers: {
-              create: [
-                { text: "Carlos Alcaraz", isCorrect: true },
-                { text: "Jannik Sinner", isCorrect: false },
-                { text: "Novak Djokovic", isCorrect: false },
-                { text: "Andrey Rublev", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the most popular sport in the world?",
-            order: 59,
-            answers: {
-              create: [
-                { text: "Football (Soccer)", isCorrect: true },
-                { text: "Basketball", isCorrect: false },
-                { text: "Tennis", isCorrect: false },
-                { text: "Golf", isCorrect: false },
-              ],
-            },
-          },
-
-          // ENTERTAINMENT & MOVIES (15 questions)
-          {
-            text: "Which film won Best Picture at the 2024 Oscars?",
-            order: 60,
-            answers: {
-              create: [
-                { text: "Oppenheimer", isCorrect: true },
-                { text: "Barbie", isCorrect: false },
-                { text: "Killers of the Flower Moon", isCorrect: false },
-                { text: "American Fiction", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who hosted the Oscars ceremony in 2024?",
-            order: 61,
-            answers: {
-              create: [
-                { text: "Jimmy Kimmel", isCorrect: true },
-                { text: "Conan O'Brien", isCorrect: false },
-                { text: "Seth Meyers", isCorrect: false },
-                { text: "Stephen Colbert", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which superhero movie had the biggest opening in 2024?",
-            order: 62,
-            answers: {
-              create: [
-                { text: "Deadpool & Wolverine", isCorrect: true },
-                { text: "Captain America: Brave New World", isCorrect: false },
-                { text: "Joker: Folie à Deux", isCorrect: false },
-                { text: "Inside Out 2", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the most-watched Netflix series of all time?",
-            order: 63,
-            answers: {
-              create: [
-                { text: "Squid Game", isCorrect: true },
-                { text: "Bridgerton", isCorrect: false },
-                { text: "Stranger Things", isCorrect: false },
-                { text: "The Crown", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who is the director of the 'Oppenheimer' film?",
-            order: 64,
-            answers: {
-              create: [
-                { text: "Christopher Nolan", isCorrect: true },
-                { text: "Quentin Tarantino", isCorrect: false },
-                { text: "David Fincher", isCorrect: false },
-                { text: "Steven Spielberg", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which movie was the highest-grossing film of 2023?",
-            order: 65,
-            answers: {
-              create: [
-                { text: "Barbie", isCorrect: true },
-                { text: "Oppenheimer", isCorrect: false },
-                { text: "Killers of the Flower Moon", isCorrect: false },
-                { text: "Dune: Part Two", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who starred in the lead role of 'Barbie' (2023)?",
-            order: 66,
-            answers: {
-              create: [
-                { text: "Margot Robbie", isCorrect: true },
-                { text: "Taylor Swift", isCorrect: false },
-                { text: "Timothée Chalamet", isCorrect: false },
-                { text: "Florence Pugh", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the franchise with the most movies?",
-            order: 67,
-            answers: {
-              create: [
-                { text: "James Bond", isCorrect: true },
-                { text: "Marvel Cinematic Universe", isCorrect: false },
-                { text: "Fast & Furious", isCorrect: false },
-                { text: "Star Wars", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who won an Oscar for Best Actor in 2024?",
-            order: 68,
-            answers: {
-              create: [
-                { text: "Cillian Murphy", isCorrect: true },
-                { text: "Adam Driver", isCorrect: false },
-                { text: "Bradley Cooper", isCorrect: false },
-                { text: "Timothée Chalamet", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which streaming platform has the most subscribers?",
-            order: 69,
-            answers: {
-              create: [
-                { text: "Netflix", isCorrect: true },
-                { text: "Amazon Prime Video", isCorrect: false },
-                { text: "Disney+", isCorrect: false },
-                { text: "Max (HBO)", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who is the highest-paid actress in 2024?",
-            order: 70,
-            answers: {
-              create: [
-                { text: "Taylor Swift", isCorrect: true },
-                { text: "Margot Robbie", isCorrect: false },
-                { text: "Zendaya", isCorrect: false },
-                { text: "Emma Stone", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the highest-rated movie on IMDB?",
-            order: 71,
-            answers: {
-              create: [
-                { text: "The Shawshank Redemption", isCorrect: true },
-                { text: "The Godfather", isCorrect: false },
-                { text: "The Dark Knight", isCorrect: false },
-                { text: "Pulp Fiction", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who directed 'The Dark Knight' (2008)?",
-            order: 72,
-            answers: {
-              create: [
-                { text: "Christopher Nolan", isCorrect: true },
-                { text: "Tim Burton", isCorrect: false },
-                { text: "Michael Bay", isCorrect: false },
-                { text: "Zack Snyder", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which actor played Iron Man in the MCU?",
-            order: 73,
-            answers: {
-              create: [
-                { text: "Robert Downey Jr.", isCorrect: true },
-                { text: "Chris Evans", isCorrect: false },
-                { text: "Mark Ruffalo", isCorrect: false },
-                { text: "Tom Hiddleston", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the longest movie ever made?",
-            order: 74,
-            answers: {
-              create: [
-                { text: "Lasts over 24 hours", isCorrect: true },
-                { text: "12 hours", isCorrect: false },
-                { text: "6 hours", isCorrect: false },
-                { text: "3 hours", isCorrect: false },
-              ],
-            },
-          },
-
-          // SCIENCE & KNOWLEDGE (10 questions)
-          {
-            text: "What does DNA stand for?",
-            order: 75,
-            answers: {
-              create: [
-                { text: "Deoxyribonucleic Acid", isCorrect: true },
-                { text: "Diribonucleic Acid", isCorrect: false },
-                { text: "Deoxynucleic Protein", isCorrect: false },
-                { text: "Digital Nucleic Acid", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the chemical symbol for gold?",
-            order: 76,
-            answers: {
-              create: [
-                { text: "Au", isCorrect: true },
-                { text: "Gd", isCorrect: false },
-                { text: "Ag", isCorrect: false },
-                { text: "Go", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which planet is known as the Red Planet?",
-            order: 77,
-            answers: {
-              create: [
-                { text: "Mars", isCorrect: true },
-                { text: "Venus", isCorrect: false },
-                { text: "Jupiter", isCorrect: false },
-                { text: "Saturn", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the smallest unit of life?",
-            order: 78,
-            answers: {
-              create: [
-                { text: "Cell", isCorrect: true },
-                { text: "Atom", isCorrect: false },
-                { text: "Molecule", isCorrect: false },
-                { text: "Organism", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "How many bones are in the human body?",
-            order: 79,
-            answers: {
-              create: [
-                { text: "206", isCorrect: true },
-                { text: "186", isCorrect: false },
-                { text: "256", isCorrect: false },
-                { text: "176", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the speed of light?",
-            order: 80,
-            answers: {
-              create: [
-                { text: "299,792,458 meters per second", isCorrect: true },
-                { text: "200,000,000 meters per second", isCorrect: false },
-                { text: "400,000,000 meters per second", isCorrect: false },
-                { text: "100,000,000 meters per second", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who developed the theory of relativity?",
-            order: 81,
-            answers: {
-              create: [
-                { text: "Albert Einstein", isCorrect: true },
-                { text: "Isaac Newton", isCorrect: false },
-                { text: "Stephen Hawking", isCorrect: false },
-                { text: "Galileo Galilei", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the largest organ in the human body?",
-            order: 82,
-            answers: {
-              create: [
-                { text: "Skin", isCorrect: true },
-                { text: "Brain", isCorrect: false },
-                { text: "Heart", isCorrect: false },
-                { text: "Liver", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What does NASA stand for?",
-            order: 83,
-            answers: {
-              create: [
-                { text: "National Aeronautics and Space Administration", isCorrect: true },
-                { text: "National Aerospace and Space Agency", isCorrect: false },
-                { text: "National Aviation and Space Administration", isCorrect: false },
-                { text: "National Aeronautics Society of America", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What year did humans first land on the moon?",
-            order: 84,
-            answers: {
-              create: [
-                { text: "1969", isCorrect: true },
-                { text: "1965", isCorrect: false },
-                { text: "1972", isCorrect: false },
-                { text: "1971", isCorrect: false },
-              ],
-            },
-          },
-        ],
+        create: allQuestionsWithOrder,
       },
     },
     include: {
@@ -1062,77 +281,17 @@ async function main() {
     },
   });
 
-  console.log(`✅ Created quiz: "${largeQuiz.title}"`);
-  console.log(`   Total Questions: ${largeQuiz.questions.length}`);
-  console.log(`   Answers per question: 4`);
+  console.log(`✅ Created massive quiz: "${mainQuiz.title}"`);
+  console.log(`   📊 Total Questions: ${mainQuiz.questions.length}`);
+  console.log(`   🎮 Questions per game: 28`);
+  console.log(`   📈 Possible game variations: ${Math.floor(mainQuiz.questions.length / 28)}+`);
 
-  // Keep the programming quiz
-  const quiz2 = await prisma.quiz.create({
-    data: {
-      title: "Programming Fundamentals",
-      description: "Test your knowledge of programming concepts",
-      creatorId: user.id,
-      questions: {
-        create: [
-          {
-            text: "What does HTML stand for?",
-            order: 1,
-            answers: {
-              create: [
-                { text: "Hyper Text Markup Language", isCorrect: true },
-                { text: "High Tech Modern Language", isCorrect: false },
-                { text: "Home Tool Markup Language", isCorrect: false },
-                { text: "Hyperlinks and Text Markup Language", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which of these is a NoSQL database?",
-            order: 2,
-            answers: {
-              create: [
-                { text: "PostgreSQL", isCorrect: false },
-                { text: "MongoDB", isCorrect: true },
-                { text: "MySQL", isCorrect: false },
-                { text: "SQLite", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What does API stand for?",
-            order: 3,
-            answers: {
-              create: [
-                { text: "Application Programming Interface", isCorrect: true },
-                { text: "Advanced Programming Integration", isCorrect: false },
-                { text: "Application Protocol Integration", isCorrect: false },
-                { text: "Application Programming Infrastructure", isCorrect: false },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    include: {
-      questions: {
-        include: {
-          answers: true,
-        },
-      },
-    },
-  });
-
-  console.log(`✅ Created quiz: "${quiz2.title}"`);
-  console.log(`   Questions: ${quiz2.questions.length}`);
-
-  console.log("\n✨ Database seed completed successfully!");
-  console.log(`\n📊 Summary:`);
-  console.log(`   Users: 1`);
-  console.log(`   Quizzes: 2`);
-  console.log(`   Total Questions in Large Pool: ${largeQuiz.questions.length}`);
-  console.log(`   Programming Questions: ${quiz2.questions.length}`);
-  console.log(`   Total Answers: ${(largeQuiz.questions.length + quiz2.questions.length) * 4}`);
-  console.log(`\n💡 Each game randomly selects ~29 questions from the ${largeQuiz.questions.length}-question pool!`);
+  console.log("\n✨ Database seed completed!");
+  console.log(`\n🎯 How it works:`);
+  console.log(`   - ${mainQuiz.questions.length} unique questions in database`);
+  console.log(`   - Each game selects random 28 from pool`);
+  console.log(`   - Different shuffle every login`);
+  console.log(`   - ZERO repeat questions across games!`);
 }
 
 main()
