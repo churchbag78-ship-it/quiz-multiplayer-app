@@ -22,17 +22,41 @@ async function main() {
   });
   console.log(`✅ Created user: ${user.username}`);
 
-  // Create 15-question Entertainment & Pop Culture trending quiz
+  // Create 15-question Trending Topics quiz (mixed categories)
   const trendingQuiz = await prisma.quiz.create({
     data: {
-      title: "Entertainment & Pop Culture Trending Quiz",
-      description: "Test your knowledge of the latest entertainment and pop culture trends! 🎬🎵🎭",
+      title: "Trending Topics 2024 Quiz",
+      description: "Test your knowledge across Tech, Sports, Entertainment, Science & News! 🌍📱🎬⚽🚀",
       creatorId: user.id,
       questions: {
         create: [
           {
-            text: "Which streaming platform premiered 'The Rings of Power'?",
+            text: "Which AI company released ChatGPT-4 in 2024?",
             order: 1,
+            answers: {
+              create: [
+                { text: "OpenAI", isCorrect: true },
+                { text: "Google DeepMind", isCorrect: false },
+                { text: "Anthropic", isCorrect: false },
+                { text: "Meta AI", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Who won the 2024 Super Bowl?",
+            order: 2,
+            answers: {
+              create: [
+                { text: "Kansas City Chiefs", isCorrect: true },
+                { text: "San Francisco 49ers", isCorrect: false },
+                { text: "Buffalo Bills", isCorrect: false },
+                { text: "Los Angeles Rams", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Which streaming platform premiered 'The Rings of Power' Season 2?",
+            order: 3,
             answers: {
               create: [
                 { text: "Amazon Prime", isCorrect: true },
@@ -43,8 +67,20 @@ async function main() {
             },
           },
           {
+            text: "What is the name of Elon Musk's AI company?",
+            order: 4,
+            answers: {
+              create: [
+                { text: "xAI", isCorrect: true },
+                { text: "OpenAI", isCorrect: false },
+                { text: "Anthropic", isCorrect: false },
+                { text: "DeepMind", isCorrect: false },
+              ],
+            },
+          },
+          {
             text: "Who won the Grammy Award for Album of the Year in 2024?",
-            order: 2,
+            order: 5,
             answers: {
               create: [
                 { text: "Taylor Swift", isCorrect: true },
@@ -55,158 +91,122 @@ async function main() {
             },
           },
           {
-            text: "Which Marvel movie broke box office records in 2023?",
-            order: 3,
-            answers: {
-              create: [
-                { text: "Barbie", isCorrect: false },
-                { text: "Oppenheimer", isCorrect: false },
-                { text: "Deadpool & Wolverine", isCorrect: true },
-                { text: "Guardians of the Galaxy Vol. 3", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the name of Elon Musk's AI company?",
-            order: 4,
-            answers: {
-              create: [
-                { text: "OpenAI", isCorrect: false },
-                { text: "xAI", isCorrect: true },
-                { text: "Anthropic", isCorrect: false },
-                { text: "DeepMind", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which K-pop group surpassed The Beatles on Spotify in 2023?",
-            order: 5,
-            answers: {
-              create: [
-                { text: "NewJeans", isCorrect: false },
-                { text: "BTS", isCorrect: true },
-                { text: "BLACKPINK", isCorrect: false },
-                { text: "Stray Kids", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Who hosted the Oscars in 2024?",
+            text: "Which country hosted the 2024 Summer Olympics?",
             order: 6,
             answers: {
               create: [
-                { text: "Jimmy Kimmel", isCorrect: true },
-                { text: "Conan O'Brien", isCorrect: false },
-                { text: "Seth Meyers", isCorrect: false },
-                { text: "John Mulaney", isCorrect: false },
+                { text: "France", isCorrect: true },
+                { text: "Japan", isCorrect: false },
+                { text: "Italy", isCorrect: false },
+                { text: "Brazil", isCorrect: false },
               ],
             },
           },
           {
-            text: "Which social media platform introduced 'Threads' in 2023?",
+            text: "Which film won Best Picture at the 2024 Oscars?",
             order: 7,
             answers: {
               create: [
-                { text: "Twitter", isCorrect: false },
+                { text: "Oppenheimer", isCorrect: true },
+                { text: "Barbie", isCorrect: false },
+                { text: "Killers of the Flower Moon", isCorrect: false },
+                { text: "American Fiction", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "What major milestone did NASA achieve in 2024?",
+            order: 8,
+            answers: {
+              create: [
+                { text: "Private space station operations began", isCorrect: true },
+                { text: "Mars colonization started", isCorrect: false },
+                { text: "New moon base opened", isCorrect: false },
+                { text: "First manned flight to Venus", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Which social media platform introduced 'Threads'?",
+            order: 9,
+            answers: {
+              create: [
                 { text: "Meta (Instagram)", isCorrect: true },
+                { text: "Twitter", isCorrect: false },
                 { text: "TikTok", isCorrect: false },
                 { text: "Snapchat", isCorrect: false },
               ],
             },
           },
           {
-            text: "Who became the youngest billionaire through content creation?",
-            order: 8,
-            answers: {
-              create: [
-                { text: "Addison Rae", isCorrect: false },
-                { text: "Charli D'Amelio", isCorrect: false },
-                { text: "Kylie Jenner", isCorrect: true },
-                { text: "James Charles", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "Which superhero movie had the biggest opening weekend in 2024?",
-            order: 9,
-            answers: {
-              create: [
-                { text: "Captain America: Brave New World", isCorrect: false },
-                { text: "Deadpool & Wolverine", isCorrect: true },
-                { text: "Aquaman 3", isCorrect: false },
-                { text: "Spider-Man: Beyond the Spider-Verse", isCorrect: false },
-              ],
-            },
-          },
-          {
-            text: "What is the name of Taylor Swift's recent album era tour?",
+            text: "Who became the first-ever female NBA G League player in 2024?",
             order: 10,
             answers: {
               create: [
-                { text: "Reputation Stadium Tour", isCorrect: false },
-                { text: "Lover Tour", isCorrect: false },
-                { text: "The Eras Tour", isCorrect: true },
-                { text: "Midnights Tour", isCorrect: false },
+                { text: "Olivia Rozman", isCorrect: true },
+                { text: "Jewell Loyd", isCorrect: false },
+                { text: "Breanna Stewart", isCorrect: false },
+                { text: "Satou Sabally", isCorrect: false },
               ],
             },
           },
           {
-            text: "Which Netflix series became a global phenomenon in 2023?",
+            text: "Which superhero movie had the biggest opening in 2024?",
             order: 11,
             answers: {
               create: [
-                { text: "Stranger Things", isCorrect: false },
-                { text: "Squid Game: The Challenge", isCorrect: false },
-                { text: "Oppenheimer", isCorrect: false },
-                { text: "Wednesday", isCorrect: true },
+                { text: "Deadpool & Wolverine", isCorrect: true },
+                { text: "Captain America: Brave New World", isCorrect: false },
+                { text: "Joker: Folie à Deux", isCorrect: false },
+                { text: "Inside Out 2", isCorrect: false },
               ],
             },
           },
           {
-            text: "Who replaced Elon Musk as Twitter CEO?",
+            text: "What major tech announcement did Apple make at WWDC 2024?",
             order: 12,
             answers: {
               create: [
-                { text: "Jack Dorsey", isCorrect: false },
-                { text: "Linda Yaccarino", isCorrect: true },
-                { text: "Parag Agrawal", isCorrect: false },
-                { text: "Evan Williams", isCorrect: false },
+                { text: "Apple Intelligence AI features", isCorrect: true },
+                { text: "New iPhone 16 specs", isCorrect: false },
+                { text: "Mac Studio 2 release", isCorrect: false },
+                { text: "Apple Watch 10 launch", isCorrect: false },
               ],
             },
           },
           {
-            text: "Which film won Best Picture at the 2024 Oscars?",
+            text: "Which world leader changed in a major 2024 election?",
             order: 13,
             answers: {
               create: [
-                { text: "Oppenheimer", isCorrect: true },
-                { text: "Barbie", isCorrect: false },
-                { text: "The Killers of the Flower Moon", isCorrect: false },
-                { text: "American Fiction", isCorrect: false },
+                { text: "UK Prime Minister (Labour won)", isCorrect: true },
+                { text: "German Chancellor", isCorrect: false },
+                { text: "French President", isCorrect: false },
+                { text: "Canadian Prime Minister", isCorrect: false },
               ],
             },
           },
           {
-            text: "What is the most-watched Netflix series of all time?",
+            text: "Who hosted the Oscars ceremony in 2024?",
             order: 14,
             answers: {
               create: [
-                { text: "Bridgerton", isCorrect: false },
-                { text: "Squid Game", isCorrect: true },
-                { text: "Stranger Things", isCorrect: false },
-                { text: "The Crown", isCorrect: false },
+                { text: "Jimmy Kimmel", isCorrect: true },
+                { text: "Conan O'Brien", isCorrect: false },
+                { text: "Seth Meyers", isCorrect: false },
+                { text: "Stephen Colbert", isCorrect: false },
               ],
             },
           },
           {
-            text: "Which celebrity announced their retirement from music in 2024?",
+            text: "Which streaming service became the most profitable in 2024?",
             order: 15,
             answers: {
               create: [
-                { text: "The Weeknd", isCorrect: false },
-                { text: "Billie Eilish", isCorrect: false },
-                { text: "Rihanna", isCorrect: false },
-                { text: "Justin Bieber", isCorrect: true },
+                { text: "Netflix", isCorrect: true },
+                { text: "Amazon Prime Video", isCorrect: false },
+                { text: "Disney+", isCorrect: false },
+                { text: "Max (HBO)", isCorrect: false },
               ],
             },
           },
