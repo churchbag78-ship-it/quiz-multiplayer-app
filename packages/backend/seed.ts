@@ -210,6 +210,66 @@ async function main() {
               ],
             },
           },
+          {
+            text: "Which artist won the most Grammy Awards in history (as of 2024)?",
+            order: 16,
+            answers: {
+              create: [
+                { text: "Taylor Swift", isCorrect: true },
+                { text: "Beyoncé", isCorrect: false },
+                { text: "Georg Solti", isCorrect: false },
+                { text: "Quincy Jones", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Who was the biggest artist of the 2000s, known for hits like 'Without Me'?",
+            order: 17,
+            answers: {
+              create: [
+                { text: "Eminem", isCorrect: true },
+                { text: "50 Cent", isCorrect: false },
+                { text: "Nelly", isCorrect: false },
+                { text: "Ja Rule", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Which song became the most-streamed song on Spotify in 2024?",
+            order: 18,
+            answers: {
+              create: [
+                { text: "Blinding Lights - The Weeknd", isCorrect: true },
+                { text: "Shape of You - Ed Sheeran", isCorrect: false },
+                { text: "Levitating - Dua Lipa", isCorrect: false },
+                { text: "One Dance - Drake", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Which British singer dominated the 2010s with hit albums like '÷' (Divide)?",
+            order: 19,
+            answers: {
+              create: [
+                { text: "Ed Sheeran", isCorrect: true },
+                { text: "Harry Styles", isCorrect: false },
+                { text: "Adele", isCorrect: false },
+                { text: "The Weeknd", isCorrect: false },
+              ],
+            },
+          },
+          {
+            text: "Who released 'Thriller', the best-selling album of all time?",
+            order: 20,
+            answers: {
+              create: [
+                { text: "Michael Jackson", isCorrect: true },
+                { text: "Prince", isCorrect: false },
+                { text: "David Bowie", isCorrect: false },
+                { text: "Queen", isCorrect: false },
+              ],
+            },
+          },
         ],
       },
     },
