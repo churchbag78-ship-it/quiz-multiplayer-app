@@ -44,10 +44,33 @@ function GamePage({ gameId, onBack }: GamePageProps) {
     initializeSocket();
   }, [gameId]);
 
+  // Shuffle array function
+  const shuffleArray = (array: any[]) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
   const fetchGameSession = async () => {
     try {
       const response = await axios.get(`/api/game/session/${gameId}`);
-      setGameSession(response.data);
+      // Randomize questions order and answers within each question
+      let shuffledQuestions = shuffleArray(response.data.quiz.questions);
+      shuffledQuestions = shuffledQuestions.map((question: Question) => ({
+        ...question,
+        answers: shuffleArray(question.answers),
+      }));
+      const gameSessionWithShuffledQuestions = {
+        ...response.data,
+        quiz: {
+          ...response.data.quiz,
+          questions: shuffledQuestions,
+        },
+      };
+      setGameSession(gameSessionWithShuffledQuestions);
       setPlayers(response.data.participants);
     } catch (err) {
       console.error('Failed to fetch game session:', err);
