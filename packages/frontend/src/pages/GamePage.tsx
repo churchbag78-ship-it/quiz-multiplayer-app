@@ -57,22 +57,18 @@ function GamePage({ gameId, onBack }: GamePageProps) {
   const fetchGameSession = async () => {
     try {
       const response = await axios.get(`/api/game/session/${gameId}`);
-      // Select random subset of questions (28 from 84-question pool)
+      // Shuffle ALL questions and take first 28 (ensures NO duplicates)
       const questionsPerGame = 28;
       let allQuestions = response.data.quiz.questions;
 
-      // Randomly select subset
-      let selectedQuestions = [];
-      let questionsCopy = [...allQuestions];
-      for (let i = 0; i < Math.min(questionsPerGame, questionsCopy.length); i++) {
-        const randomIndex = Math.floor(Math.random() * questionsCopy.length);
-        selectedQuestions.push(questionsCopy[randomIndex]);
-        questionsCopy.splice(randomIndex, 1);
-      }
+      // Shuffle the entire pool
+      let fullyShuffled = shuffleArray(allQuestions);
 
-      // Randomize order and answers within each question
-      let shuffledQuestions = shuffleArray(selectedQuestions);
-      shuffledQuestions = shuffledQuestions.map((question: Question) => ({
+      // Take first 28 (guaranteed unique)
+      let selectedQuestions = fullyShuffled.slice(0, Math.min(questionsPerGame, fullyShuffled.length));
+
+      // Shuffle answers within each question
+      let shuffledQuestions = selectedQuestions.map((question: Question) => ({
         ...question,
         answers: shuffleArray(question.answers),
       }));
